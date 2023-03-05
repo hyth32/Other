@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 std::pair<std::string, std::string> SplitData(const std::string& str, const std::string& divider) {
 	std::string login = str.substr(0, str.find(divider));
@@ -31,7 +32,7 @@ std::vector<std::pair<std::string, std::pair<std::string, std::string>>> ReadDat
 }
 
 int ListData(const std::vector<std::pair<std::string, std::pair<std::string, std::string>>>& dataSet) {
-	std::cout << "Site & Login & Password" << std::endl;
+	std::cout << "L-P Database" << std::endl;
 	int count = 1;
 	for (const auto& pair : dataSet) {
 		std::cout << count << ". ";
@@ -45,9 +46,9 @@ int ListData(const std::vector<std::pair<std::string, std::pair<std::string, std
 int AskNewData(std::string &site, std::string &login, std::string &password) {
 	std::cout << "Enter new site" << std::endl;
 	std::cin >> site;
-	std::cout << "Enter new login" << std::endl;
+	std::cout << "\nEnter new login" << std::endl;
 	std::cin >> login;
-	std::cout << "Enter new password" << std::endl;
+	std::cout << "\nEnter new password" << std::endl;
 	std::cin >> password;
 	system("cls");
 	return 1;
@@ -73,16 +74,22 @@ std::vector<std::pair<std::string, std::pair<std::string, std::string>>> AddNewD
 }
 
 int WriteNewData (std::string& dataName, std::string& divider, const std::vector<std::pair<std::string, std::pair<std::string, std::string>>>& dataSet) {
-	std::ofstream data(dataName);
+	
 
+	std::ofstream data(dataName);
 	if (data.is_open()) {
-		for (const auto& pair : dataSet) {	
+		auto sortedData = dataSet;
+		std::sort(sortedData.begin(), sortedData.end(), [](const auto& a, const auto& b) {
+			return a.first < b.first;
+			});
+		for (const auto& pair : sortedData) {	
 			data << pair.first << pair.second.first << divider << pair.second.second << std::endl;
 		}
 		data.close();
 	}
 	else {
 		std::cout << "Failed to open file" << std::endl;
+		return 0;
 	}
 	return 1;
 }
