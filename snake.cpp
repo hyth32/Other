@@ -4,8 +4,7 @@
 #include <conio.h>
 #include <ctime>
 using namespace std;
-
-// Variables and arrays declaration
+
 bool gameOver;
 bool invalidCoord;
 const int width = 30;
@@ -19,12 +18,12 @@ Direction dir;
 
 void ClearScreen()
 {
-    // Function which cleans the screen without flickering
+    // очищение экрана без мигания
     COORD cursorPosition;   cursorPosition.X = 0;   cursorPosition.Y = 0;   SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursorPosition);
 }
 
 void Setup()
-{   // Initialise variables
+{  
     gameOver = false;
     dir = STOP;
     srand(time(0));
@@ -35,11 +34,11 @@ void Setup()
     score = 0;
 }
 
-void Draw() // Drawing playing field, snake and fruits
+void Draw()
 {
     ClearScreen();
 
-    // Draws top border
+    // верхняя грань
     for (int i = 0; i < width + 2; i++)
         cout << '#';
     cout << endl;
@@ -48,19 +47,19 @@ void Draw() // Drawing playing field, snake and fruits
     {
         for (int k = 0; k < width; k++)
         {
-            // Left border
+            // левая грань
             if (k == 0)
                 cout << '#';
-            // Snake's head
+            // голова
             if (i == y && k == x)
                 cout << '@';
-            // Fruit
+            // фрукт
             else if (i == fruitY && k == fruitX)
                 cout << '*';
 
             else
             {
-                // Checks if there is a tail block with appropriate coordinates and draws it 
+                // проверка существования хвоста с подходящими координат и отрисовка
                 bool printTail = false;
                 for (int j = 0; j < tailLength; j++)
                 {
@@ -70,12 +69,12 @@ void Draw() // Drawing playing field, snake and fruits
                         printTail = true;
                     }
                 }
-                // Draws blank space if there is nothing to display
+                // отрисовка пустого пространства если хвоста нет 
                 if (!printTail)
                     cout << ' ';
             }
 
-            // Right border
+            // правая грань
             if (k == width - 1)
                 cout << '#';
 
@@ -83,12 +82,12 @@ void Draw() // Drawing playing field, snake and fruits
         cout << endl;
     }
 
-    // Draws bottom border
+    // нижняя грань
     for (int i = 0; i < width + 2; i++)
         cout << '#';
     cout << endl;
 
-    // Displays player's score
+    // вывод счета
     cout << endl;
     cout << "Score: " << score << endl;
 
@@ -96,7 +95,7 @@ void Draw() // Drawing playing field, snake and fruits
 
 void Input()
 {
-    // Changes snake's direction depending on the button pressed and doesn't allow player to change direction in invalid way 
+    // проверка нажатия кнопок управления и ограничение по движению 
     if (_kbhit())
     {
         switch (_getch())
@@ -127,12 +126,11 @@ void Input()
 
 void Logic()
 {
-    // Tail logic. Every new eteration we remember previous position of the head and save it to prevX, prevY.
-    // Then we update array with snake's parts positions (change first numbers in arrays tailX, tailY to a new head coordinates).
-    // And after that for each number in arrays except the first ones we make some changes.
-    // Save tailX[i], tailY[i] to prevX2, prevY2 and equate tailX[i], tailY[i] to prevX, prevY.
-    // And equate prevX, prevY to prevX2, prevY2.
-    // Then change rest of the arrays in the same way.
+    // каждую итерацию запоминаем прошлую координату головы и записываем в prevX, prevY
+    // изменяем первые значения tailX, tailY на новую координату головы
+
+    // сохраняем tailX[i] и tailY[i] в prevX2 и prevY2 и присваиваем tailX[i] и tailY[i] к prevX и prevY.
+    // присваиваем prevX и prevY к prevX2 и prevY2.
 
     int prevX = tailX[0];
     int prevY = tailY[0];
@@ -149,7 +147,7 @@ void Logic()
         prevX = prevX2;
         prevY = prevY2;
     }
-    // Changes snake's head coordinates depending on a direction
+    // изменение координат головы в зависимости от направления
     switch (dir)
     {
     case LEFT:
@@ -166,18 +164,18 @@ void Logic()
         break;
     }
 
-    // Detects collision with a tail
+    // врезался в хвост
     for (int i = 0; i < tailLength; i++)
         if (tailX[i] == x && tailY[i] == y)
             gameOver = true;
 
-    // Detects collision with a fruit
+    // съел фрукта 
     if (x == fruitX && y == fruitY)
     {
         score += 1;
         fruitX = rand() % width;
         fruitY = rand() % height;
-        // Generate new fruit position if it consides with snake's tail position 
+        // генерация нового фрукта с проверкой совпадения с хвостом
         for (int i = 0; i < tailLength; )
         {
             invalidCoord = false;
@@ -193,7 +191,7 @@ void Logic()
         tailLength++;
     }
 
-    // Changes snake position if it goes through the wall
+    // прохождение через границу 
     if (y >= height)
         y = 0;
     else if (y < 0)
@@ -207,7 +205,7 @@ void Logic()
 int main()
 {
     Setup();
-    while (!gameOver) // Game mainloop 
+    while (!gameOver)
     {
         Draw();
         Sleep(80);
